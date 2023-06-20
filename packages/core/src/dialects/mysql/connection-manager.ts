@@ -20,6 +20,7 @@ import { logger } from '../../utils/logger';
 import type { Connection as AbstractConnection } from '../abstract/connection-manager';
 import { AbstractConnectionManager } from '../abstract/connection-manager';
 import type { AbstractDialect } from '../abstract/index.js';
+import { getStream } from './ssh-utils';
 
 const debug = logger.debugContext('connection:mysql');
 
@@ -29,7 +30,7 @@ type Lib = {
   Connection: Connection,
 };
 
-export interface MySqlConnection extends Connection, AbstractConnection {}
+export interface MySqlConnection extends Connection, AbstractConnection { }
 
 export interface MySqlTypeCastValue {
   type: string;
@@ -99,6 +100,14 @@ export class MySqlConnectionManager extends AbstractConnectionManager<MySqlConne
     };
 
     try {
+
+      // ssh connect
+      if (config.ssh) {
+        const stream = await getStream(config);
+        connectionConfig.stream = stream;
+        connectionConfig.host = 'localhost';
+      }
+
       const connection: MySqlConnection = await createConnection(this.lib, connectionConfig);
 
       debug('connection acquired');

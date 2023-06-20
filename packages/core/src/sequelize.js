@@ -254,6 +254,7 @@ export class Sequelize extends SequelizeTypeScript {
       native: false,
       replication: false,
       ssl: undefined,
+      ssh: undefined,
       // TODO [>7]: remove this option
       quoteIdentifiers: true,
       hooks: {},
@@ -362,6 +363,7 @@ export class Sequelize extends SequelizeTypeScript {
       port: this.options.port,
       protocol: this.options.protocol,
       ssl: this.options.ssl,
+      ssh: this.options.ssh,
       dialectOptions: this.options.dialectOptions,
     };
 
@@ -718,10 +720,10 @@ Use Sequelize#query if you wish to use replacements.`);
 
       const connection = options.transaction ? options.transaction.getConnection()
         : options.connection ? options.connection
-        : await this.connectionManager.getConnection({
-          useMaster: options.useMaster,
-          type: options.type === 'SELECT' ? 'read' : 'write',
-        });
+          : await this.connectionManager.getConnection({
+            useMaster: options.useMaster,
+            type: options.type === 'SELECT' ? 'read' : 'write',
+          });
 
       if (this.options.dialect === 'db2' && options.alter && options.alter.drop === false) {
         connection.dropTable = false;
@@ -773,8 +775,7 @@ Use Sequelize#query if you wish to use replacements.`);
 
     // Generate SQL Query
     const query
-      = `SET ${
-        _.map(variables, (v, k) => `@${k} := ${typeof v === 'string' ? `"${v}"` : v}`).join(', ')}`;
+      = `SET ${_.map(variables, (v, k) => `@${k} := ${typeof v === 'string' ? `"${v}"` : v}`).join(', ')}`;
 
     return await this.query(query, options);
   }
