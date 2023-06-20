@@ -1,9 +1,11 @@
-## sequelize mysql ssh 远程连接存在的问题
+## sequelize 远程连接mysql存在的问题
 
 - sequelize 在配置中使用了cloneDeep导致部分stream无法读取。
 - sequelize 初始化以后，在后续的执行过程中没有提供传递stream的方法。
 
-## sequelize-mysql-ssh 使用
+因此对sequelize源码做了小小的改动
+
+## sequelize-mysql-ssh使用说明
 
 ```javascript
 const config = {
